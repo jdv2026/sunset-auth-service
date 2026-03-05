@@ -1,0 +1,87 @@
+<?php
+
+namespace App\Services;
+
+use App\Contracts\UserType;
+use App\Models\DbVersion;
+use App\Models\Navigation;
+use Illuminate\Support\Collection;
+use Tymon\JWTAuth\Facades\JWTAuth;
+
+class MetaService 
+{
+
+	public function handleMetaData(): array 
+	{
+		$latestVersion = $this->getDbVersions();
+		$publicKey = $this->getPublicKey();
+		return [
+			'publicKey' => $publicKey,
+			'dbVersions' => $latestVersion,
+		];
+	}
+
+	public function handleGetNavigationData(): array 
+	{
+		$navs = $this->getNavigation();
+		return $this->filterOutAccessibleNavs($navs);
+	}
+
+	private function filterOutAccessibleNavs(Collection $navs): array 
+	{
+		$user = JWTAuth::user();
+
+		return $navs->map(fn ($value) => [
+			'header' => $value['header'],
+			'items' => $this->filterItemsForUser($value['items'], $user),
+		])->toArray();
+	}
+
+	private function filterItemsForUser($items, $user): array 
+	{
+		$val = [];
+	
+		foreach ($items as $item) {
+			if ($this->canAccess($item, $user)) {
+				$val[] = $item;
+			}
+		}
+	
+		return $val;
+	}
+
+	private function canAccess($item, $user): bool 
+	{
+		return in_array($user['type'], [
+			UserType::Admin->value,
+			UserType::Guest->value,
+			$item['type'],
+		], true);
+	}
+
+	private function getNavigation(): Collection 
+	{
+		return Navigation::orderBy('id')
+			->get()
+			->groupBy('header')
+			->map(fn($items, $header) => [
+				'header' => $header,
+				'items' => $items,
+			])
+			->values();
+	}
+
+	private function getDbVersions(): DbVersion 
+	{
+		return DbVersion::select('version', 'created_at', 'updated_at')
+			->latest()
+			->first();
+	}
+
+	private function getPublicKey(): ?string 
+	{
+		$publicKeyPath = storage_path('jwt/public.pem');
+		return file_exists($publicKeyPath) ? file_get_contents($publicKeyPath) : null;
+	}
+
+}
