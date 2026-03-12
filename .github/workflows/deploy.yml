@@ -15,7 +15,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
           extensions: mbstring, bcmath, zip, pcntl, pdo, pdo_mysql, openssl
 
       - name: Install dependencies
@@ -35,11 +35,11 @@ jobs:
           echo "DB_CONNECTION=sqlite" >> .env
           echo "APP_PORT=${{ secrets.APP_PORT }}" >> .env
 
-      - name: Run deploy
-        run: php artisan deploy
-
       - name: Run tests
         run: php artisan test
+
+      - name: Run deploy
+        run: php artisan deploy
 
   deploy:
     runs-on: ubuntu-latest
@@ -77,6 +77,12 @@ jobs:
           script: |
             cd ${{ secrets.SERVER_PROJECT_PATH }}
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker tag ghcr.io/${{ github.repository }}:latest ghcr.io/${{ github.repository }}:previous || true
             docker compose pull
             docker compose up -d
-            docker compose exec -T app php artisan deploy
+            if ! docker compose exec -T app php artisan deploy; then
+              echo "Deploy failed, rolling back..."
+              docker tag ghcr.io/${{ github.repository }}:previous ghcr.io/${{ github.repository }}:latest
+              docker compose up -d
+              exit 1
+            fi
