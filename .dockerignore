@@ -11,7 +11,7 @@ database/database.sqlite
 .env
 .env.*
 !.env.example
-docker
+docker/nginx
 docker-compose*.yml
 *.md
 .editorconfig
