@@ -135,6 +135,7 @@ jobs:
             docker tag ${{ secrets.DOCKER_USERNAME }}/sunset-auth-service-api:latest ${{ secrets.DOCKER_USERNAME }}/sunset-auth-service-api:previous || true
             docker compose pull
             docker compose up -d
+            sleep 5
             if ! docker compose exec -T app php artisan deploy; then
               echo "Deploy failed, rolling back..."
               docker tag ${{ secrets.DOCKER_USERNAME }}/sunset-auth-service-api:previous ${{ secrets.DOCKER_USERNAME }}/sunset-auth-service-api:latest
