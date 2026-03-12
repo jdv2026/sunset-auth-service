@@ -22,6 +22,11 @@ class InstallSunset extends Command
 
     public function handle(): int
     {
+        if (file_exists($this->privateKeyPath) && file_exists($this->publicKeyPath)) {
+            $this->info('JWT keys already exist, skipping installation.');
+            return self::SUCCESS;
+        }
+
         $this->ensureJwtStorageDirectoryExists();
 
         $this->info('Generating RSA key pair (JWT signing)...');
@@ -68,13 +73,13 @@ class InstallSunset extends Command
     {
         openssl_pkey_export($keyResource, $privateKey);
         file_put_contents($privatePath, $privateKey);
-        if (! @chmod($privatePath, 0600)) {
+        if (! chmod($privatePath, 0600)) {
             $this->warn("Could not set permissions on {$privatePath}. Run manually: sudo chmod 0600 {$privatePath}");
         }
 
         $publicKey = openssl_pkey_get_details($keyResource)['key'];
         file_put_contents($publicPath, $publicKey);
-        if (! @chmod($publicPath, 0644)) {
+        if (! chmod($publicPath, 0644)) {
             $this->warn("Could not set permissions on {$publicPath}. Run manually: sudo chmod 0644 {$publicPath}");
         }
     }
@@ -108,7 +113,7 @@ class InstallSunset extends Command
 
         foreach ($files as $file) {
             if (file_exists($file)) {
-                if (! @chown($file, $webUser) || ! @chgrp($file, $webUser)) {
+                if (! chown($file, $webUser) || ! chgrp($file, $webUser)) {
                     $failed = true;
                 }
             }

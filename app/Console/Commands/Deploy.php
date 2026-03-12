@@ -10,7 +10,7 @@ class Deploy extends Command
 {
     protected $signature = 'deploy';
 
-    protected $description = 'Run all deployment steps: composer install, migrate, cache, optimize';
+    protected $description = 'Run all deployment steps: migrate, cache, optimize';
 
     public function handle(): int
     {
@@ -18,7 +18,7 @@ class Deploy extends Command
         $this->newLine();
 
         $steps = [
-            'Installing dependencies' => ['composer', 'install'],
+            'Installing Sunset'        => ['php', 'artisan', 'install:sunset'],
             'Running migrations'       => ['php', 'artisan', 'migrate', '--force'],
             'Caching configuration'   => ['php', 'artisan', 'config:cache'],
             'Caching routes'          => ['php', 'artisan', 'route:cache'],
@@ -80,7 +80,7 @@ class Deploy extends Command
 
         $process = new Process($command, base_path());
         $process->setTimeout(300);
-        $process->run(function (string $type, string $output) {
+        $process->run(function (string $_, string $output) {
             $this->line(trim($output));
         });
 

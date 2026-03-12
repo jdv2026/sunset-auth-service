@@ -87,7 +87,7 @@ class AuthController extends BaseController
 
         $user  = $this->authService->resolvePreAuthUser($request->bearerToken());
         $this->twoFactorService->useRecoveryCode($user, $request->recovery_code);
-        $token = $this->authService->generateToken($user);
+        $this->authService->generateToken($user);
 
         Log::info('Recovery code used, 2FA disabled', ['username' => $user->username]);
 
