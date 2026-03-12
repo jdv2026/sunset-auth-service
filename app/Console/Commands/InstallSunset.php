@@ -44,7 +44,16 @@ class InstallSunset extends Command
 
     private function jwtKeysAlreadySet(): bool
     {
-        $envPath  = base_path('.env');
+        if (env('JWT_PRIVATE_KEY') && env('JWT_PUBLIC_KEY')) {
+            return true;
+        }
+
+        $envPath = base_path('.env');
+
+        if (! file_exists($envPath)) {
+            return false;
+        }
+
         $contents = file_get_contents($envPath);
 
         return str_contains($contents, 'JWT_PRIVATE_KEY=') && str_contains($contents, 'JWT_PUBLIC_KEY=');
