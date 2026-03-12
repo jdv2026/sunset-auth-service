@@ -55,6 +55,11 @@ class Deploy extends Command
                 mkdir($dir, 0775, true);
             }
         }
+
+        $db = database_path('database.sqlite');
+        if (! file_exists($db)) {
+            touch($db);
+        }
     }
 
     private function updateDbVersion(): void
