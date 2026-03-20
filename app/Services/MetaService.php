@@ -30,19 +30,6 @@ class MetaService
 		return $this->getNavigation();
 	}
 
-	private function filterItemsForUser($items, $user): array 
-	{
-		$val = [];
-	
-		foreach ($items as $item) {
-			if ($this->canAccess($item, $user)) {
-				$val[] = $item;
-			}
-		}
-	
-		return $val;
-	}
-
 	private function canAccess($item, $user): bool 
 	{
 		return in_array($user['type'], [
@@ -54,7 +41,7 @@ class MetaService
 
 	private function getNavigation(): Collection 
 	{
-		return Navigation::orderBy('id')
+		return Navigation::orderBy('order')
 			->get()
 			->groupBy('header')
 			->map(fn($items, $header) => [

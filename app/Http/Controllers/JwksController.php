@@ -25,6 +25,10 @@ class JwksController extends BaseController
                     'e'   => $e,
                 ],
             ],
+            'aes' => [
+                'key' => config('app.AES_KEY'),
+                'iv'  => config('app.AES_IV'),
+            ],
         ]);
     }
 }

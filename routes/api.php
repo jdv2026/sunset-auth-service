@@ -38,5 +38,6 @@ Route::middleware([JwtAuthenticate::class])->group(function () {
 	Route::post('web/user', [AuthController::class, 'fetchAuthUser']);
 
 	Route::post('web/nav', [MetaController::class, 'getNav']);
+	Route::post('web/service/token/refresh', [AuthController::class, 'refreshToken']);
 
 });
