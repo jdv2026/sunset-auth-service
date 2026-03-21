@@ -120,4 +120,11 @@ class AuthController extends BaseController
 		return $this->success(['user' => $user, 'settings' => null], 'User fetched successfully.');
 	}
 
+	public function logout(): JsonResponse
+	{
+		Log::info('User logout', ['ip' => request()->ip()]);
+		$this->authService->handleLogout();
+		return $this->success(null, 'Logged out successfully.');
+	}
+
 }

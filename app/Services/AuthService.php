@@ -143,7 +143,7 @@ class AuthService
 
     private function generateEncryptedToken(User $user): string
     {
-        $token = JWTAuth::claims(['jti' => Str::uuid()->toString(), 'type' => $user->type])
+        $token = JWTAuth::claims(['jti' => Str::uuid()->toString(), 'type' => $user->type, 'pre_auth' => false])
             ->fromUser($user);
 
         return openssl_encrypt(

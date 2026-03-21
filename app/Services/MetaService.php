@@ -22,25 +22,13 @@ class MetaService
 
 		return [
 			'dbVersions' => $latestVersion,
+			'appVersion' => config('app.version'),
 		];
 	}
 
 	public function handleGetNavigationData(): Collection 
 	{
 		return $this->getNavigation();
-	}
-
-	private function filterItemsForUser($items, $user): array 
-	{
-		$val = [];
-	
-		foreach ($items as $item) {
-			if ($this->canAccess($item, $user)) {
-				$val[] = $item;
-			}
-		}
-	
-		return $val;
 	}
 
 	private function canAccess($item, $user): bool 
@@ -54,7 +42,7 @@ class MetaService
 
 	private function getNavigation(): Collection 
 	{
-		return Navigation::orderBy('id')
+		return Navigation::orderBy('order')
 			->get()
 			->groupBy('header')
 			->map(fn($items, $header) => [

@@ -12,6 +12,7 @@ class Navigation extends Model
         'name',
         'link',
 		'header',
+        'order',
     ];
 	
 }

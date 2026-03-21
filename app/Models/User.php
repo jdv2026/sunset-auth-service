@@ -28,6 +28,9 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'jti',
         'two_factor_secret',
+        'two_factor_enabled',
+        'two_factor_attempts',
+        'two_factor_attempts_expiry',
     ];
 
     protected $casts = [
@@ -51,6 +54,14 @@ class User extends Authenticatable implements JWTSubject
 
     public function getJWTCustomClaims(): array
     {
-        return [];
+        return [
+            'user' => [
+                'id'         => $this->id,
+                'first_name' => $this->first_name,
+                'last_name'  => $this->last_name,
+                'username'   => $this->username,
+                'type'       => $this->type,
+            ],
+        ];
     }
 }
