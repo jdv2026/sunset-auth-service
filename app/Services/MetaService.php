@@ -22,6 +22,7 @@ class MetaService
 
 		return [
 			'dbVersions' => $latestVersion,
+			'appVersion' => config('app.version'),
 		];
 	}
 

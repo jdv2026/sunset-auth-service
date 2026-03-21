@@ -28,6 +28,9 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'jti',
         'two_factor_secret',
+        'two_factor_enabled',
+        'two_factor_attempts',
+        'two_factor_attempts_expiry',
     ];
 
     protected $casts = [
