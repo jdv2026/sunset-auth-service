@@ -22,7 +22,7 @@ class MetaService
 
 		return [
 			'dbVersions' => $latestVersion,
-			'appVersion' => config('app.version'),
+			'appVersion' => "Auth: " . config('app.version'),
 		];
 	}
 
