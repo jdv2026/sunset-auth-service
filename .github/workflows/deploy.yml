@@ -13,7 +13,6 @@ jobs:
       runs-on: ubuntu-latest
       outputs:
         new_version: ${{ steps.bump.outputs.new_version }}
-        should_deploy: ${{ steps.bump.outputs.should_deploy }}
       steps:
         - uses: actions/checkout@v4
           with:
@@ -33,17 +32,12 @@ jobs:
               MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0
             elif echo "$COMMIT_MSG" | grep -qi '^\[minor\]'; then
               MINOR=$((MINOR + 1)); PATCH=0
-            elif echo "$COMMIT_MSG" | grep -qi '^\[patch\]'; then
-              PATCH=$((PATCH + 1))
             else
-              echo "No version prefix — skipping deploy"
-              echo "should_deploy=false" >> $GITHUB_OUTPUT
-              exit 0
+              PATCH=$((PATCH + 1))
             fi
 
             NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
             echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-            echo "should_deploy=true" >> $GITHUB_OUTPUT
 
             git config user.name "github-actions"
             git config user.email "github-actions@github.com"
@@ -53,7 +47,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: version
-    if: needs.version.outputs.should_deploy == 'true'
 
     steps:
       - name: Checkout
@@ -96,7 +89,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [version, test]
-    if: needs.version.outputs.should_deploy == 'true'
 
     steps:
       - name: Checkout
