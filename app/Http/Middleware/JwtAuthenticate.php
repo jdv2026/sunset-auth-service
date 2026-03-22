@@ -69,7 +69,7 @@ class JwtAuthenticate
         Log::error('Token expired, refreshing');
 
         try {
-            $newToken = JWTAuth::refresh($request->bearerToken());
+            $newToken = JWTAuth::refresh();
 
             $request->headers->set('Authorization', 'Bearer ' . $newToken);
             $response = $next($request);

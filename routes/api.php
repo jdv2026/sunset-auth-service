@@ -31,6 +31,8 @@ Route::post('web/firsttime/2fa/verify', [AuthController::class, 'verifyFirstTime
 Route::post('web/2fa/recovery', [AuthController::class, 'useRecoveryCode']);
 Route::post('web/2fa/verify', [AuthController::class, 'verify2fa']);
 
+Route::post('web/service/token/refresh', [AuthController::class, 'refreshToken']);
+
 Route::middleware([JwtAuthenticate::class])->group(function () {
 
     Route::post('web/2fa/enable',  [AuthController::class, 'enable2fa']);
@@ -38,7 +40,6 @@ Route::middleware([JwtAuthenticate::class])->group(function () {
 	Route::post('web/user', [AuthController::class, 'fetchAuthUser']);
 
 	Route::post('web/nav', [MetaController::class, 'getNav']);
-	Route::post('web/service/token/refresh', [AuthController::class, 'refreshToken']);
 	Route::post('web/user/logout', [AuthController::class, 'logout']);
 
 });
