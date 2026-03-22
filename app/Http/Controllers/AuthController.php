@@ -123,22 +123,16 @@ class AuthController extends BaseController
 	public function refreshToken(): JsonResponse
 	{
 		Log::info('Token refresh attempt', ['ip' => request()->ip()]);
-		Log::debug(request()->bearerToken());
 		$key       = base64_decode(config('app.AES_KEY'));
 		$iv        = hex2bin(config('app.AES_IV'));
 		$decrypted = openssl_decrypt(request()->bearerToken(), 'aes-256-cbc', $key, 0, $iv);
-		Log::debug($decrypted);
 
 		if (! $decrypted) {
 			return response()->json(['message' => 'Invalid token.'], 401);
 		}
-		Log::debug($decrypted);
 
-		$newToken  = JWTAuth::setToken($decrypted)->refresh();
-		Log::debug($newToken);
+		$newToken  = JWTAuth::setToken($decrypted)->refresh(false, true);
 		$encrypted = openssl_encrypt($newToken, 'aes-256-cbc', $key, 0, $iv);
-		Log::debug("xxxxxxxxxxxxxxxxxxxxxx");
-		Log::debug($encrypted);
 
 		return response()->json(['access_token' => $encrypted]);
 	}
